@@ -15,6 +15,7 @@ const Messages = ({ messages }: MessagesProps) => {
       message={message.message}
       timestamp={message.timestamp}
       sender={message.sender}
+      id={message.id}
     />
   ));
 

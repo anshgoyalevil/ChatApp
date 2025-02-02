@@ -32,7 +32,7 @@ const ChatMessage = ({
         <div
           className={`${
             sender === "Agent" ? "bg-[#EEEEEE]" : "bg-[#4B70F5]"
-          } max-w-80 text-wrap py-2 px-4 ${
+          } max-w-[600px] text-wrap py-2 px-4 ${
             sender === "Agent" ? "text-gray-700" : "text-white"
           } ${
             sender === "Agent" ? "rounded-tr-2xl" : "rounded-tl-2xl"

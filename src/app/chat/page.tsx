@@ -8,6 +8,7 @@ import { Message } from "@/types/Message";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+
   return (
     <div className="flex flex-col max-h-screen min-h-screen">
       {/* Chat Header */}

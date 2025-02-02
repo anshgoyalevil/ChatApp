@@ -3,7 +3,7 @@
 
 import { Message } from "@/types/Message";
 import { IconSend } from "@tabler/icons-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 
 const ChatInput = ({
   setMessages,
@@ -11,8 +11,9 @@ const ChatInput = ({
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }) => {
   const [message, setMessage] = useState("");
+  const messageRef = useRef<HTMLInputElement>(null);
 
-  const handleMessageSend = (e: any) => {
+  const handleMessageSend = async (e: any) => {
     if (!message.trim()) return;
     e?.preventDefault();
 
@@ -22,20 +23,62 @@ const ChatInput = ({
         message,
         timestamp: new Date().toLocaleTimeString(),
         sender: "User",
-      },
-      {
-        message,
-        timestamp: new Date().toLocaleTimeString(),
-        sender: "Agent",
+        id: Math.random().toString(36).substr(2, 9),
       },
     ]);
+
+    const response = await fetch("/api/gemini", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ message }),
+    });
+
     setMessage("");
+
+    messageRef.current?.scrollIntoView({ behavior: "smooth" });
+
+    const reader = response.body?.getReader();
+    const decoder = new TextDecoder();
+
+    if (reader) {
+      let receivedText = "";
+      const agentMessageId = Math.random().toString(36).substr(2, 9);
+      setMessages((prev: Message[]) => [
+        ...prev,
+        {
+          message: "",
+          timestamp: new Date().toLocaleTimeString(),
+          sender: "Agent",
+          id: agentMessageId,
+        },
+      ]);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        receivedText += decoder.decode(value, { stream: true });
+        setMessages((prev: Message[]) => {
+          const updatedMessages = prev.map((msg) => {
+            if (msg.id === agentMessageId) {
+              return {
+                ...msg,
+                message: receivedText,
+              };
+            }
+            return msg;
+          });
+          return updatedMessages;
+        });
+      }
+    }
   };
 
   return (
     <form onSubmit={handleMessageSend}>
       <div className="p-4 flex items-center gap-4">
         <input
+          ref={messageRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="w-full p-3 font-semibold rounded-2xl border-none focus:ring-0 bg-gray-100"
