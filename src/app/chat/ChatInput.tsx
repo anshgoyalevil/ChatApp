@@ -3,15 +3,16 @@
 
 import { Message } from "@/types/Message";
 import { IconSend } from "@tabler/icons-react";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 
 const ChatInput = ({
   setMessages,
+  bottomRef,
 }: {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
+  bottomRef: React.RefObject<HTMLDivElement>;
 }) => {
   const [message, setMessage] = useState("");
-  const messageRef = useRef<HTMLInputElement>(null);
 
   const handleMessageSend = async (e: any) => {
     if (!message.trim()) return;
@@ -37,7 +38,7 @@ const ChatInput = ({
 
     setMessage("");
 
-    messageRef.current?.scrollIntoView({ behavior: "smooth" });
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
 
     const reader = response.body?.getReader();
     const decoder = new TextDecoder();
@@ -70,6 +71,7 @@ const ChatInput = ({
           });
           return updatedMessages;
         });
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
@@ -78,7 +80,6 @@ const ChatInput = ({
     <form onSubmit={handleMessageSend}>
       <div className="p-4 flex items-center gap-4">
         <input
-          ref={messageRef}
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           className="w-full p-3 font-semibold rounded-2xl border-none focus:ring-0 bg-gray-100"

@@ -8,6 +8,7 @@ import { Message } from "@/types/Message";
 
 const ChatPage = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+  const bottomRef = React.useRef<HTMLDivElement>(null);
 
   return (
     <div className="flex flex-col max-h-screen min-h-screen">
@@ -18,10 +19,11 @@ const ChatPage = () => {
       {/* Chat Body */}
       <div className="flex-1 overflow-y-auto">
         <Messages messages={messages} />
+        <div ref={bottomRef}></div>
       </div>
       {/* Chat Input Box */}
       <div className="shadow-md">
-        <ChatInput setMessages={setMessages} />
+        <ChatInput bottomRef={bottomRef} setMessages={setMessages} />
       </div>
     </div>
   );
