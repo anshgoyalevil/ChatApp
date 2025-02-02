@@ -10,7 +10,7 @@ const ChatInput = ({
   bottomRef,
 }: {
   setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
-  bottomRef: React.RefObject<HTMLDivElement>;
+  bottomRef: React.RefObject<HTMLDivElement | null>;
 }) => {
   const [message, setMessage] = useState("");
 
